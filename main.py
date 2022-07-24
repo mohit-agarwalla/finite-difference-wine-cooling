@@ -1,6 +1,8 @@
 # Import libraries
 import matplotlib.pyplot as plt
 import numpy as np
+from graphing import SurfacePlot_3D
+from solver import FDM
 
 # Solving a PDE of wine bottle inside a cooler
 # Heat diffusion equation: T_t = alpha(u_xx + u_yy) 
@@ -13,11 +15,19 @@ body_length = 200
 initial_wine_temp = 25
 
 # PDE constants
-alpha = 0.392 # thermal diffusivity of wine (mm2/s)
-k = 0.2 # time step
+# alpha = 0.392 # thermal diffusivity of wine (mm2/s)
+alpha = 0.1
+k = 1 # time step
 h = 1 # x and y step
 r = alpha*k/h**2 
-converging = r<=0.25 # Check if convergence will occur
+const = [r, k]
+
+# Check if convergence will occur
+def Convergence(r):
+    conv = r<=0.25 
+    return conv
+
+converging = Convergence(r)
 
 # Only implement the model if convergence occurs
 if converging:
@@ -29,9 +39,10 @@ if converging:
     t_final = 3600
 
     # Determine number of intervals required
-    t_intervals = int(t_final/k)
     x_intervals = int(x_final/h)
     y_intervals = int(y_final/h)
+    t_intervals = int(t_final/k)
+    intervals = [x_intervals, y_intervals, t_intervals]
 
     # Discretise domain and create empty array of specificed size for (x,y,t)
     T = np.zeros((x_intervals + 1, y_intervals + 1, t_intervals + 1))
@@ -56,6 +67,7 @@ if converging:
     neck_lower_index = int((0.5 * (y_final - in_diam)) / h) # neck bottom y value
     neck_upper_index = int((0.5 * (y_final + in_diam)) / h) # neck top y value
     left_neck_index = int(body_length / h) # neck and body boundary x value
+    indices = [neck_lower_index, neck_upper_index, left_neck_index]
 
     ## Implement BC to cooler region within control volume
     for i in range(left_neck_index, x_intervals + 1):
@@ -63,23 +75,9 @@ if converging:
             if (j > neck_upper_index) or (j < neck_lower_index):
                 T[i,j,:] = T_cooler # if in the cooler region apply BC    
     
-    # Solve for t > 0 using the Finite Difference Method (FDM)
-    for t in range(1, t_intervals + 1):
-        for i in range(1,x_intervals):
-            for j in range(1,y_intervals):
-                # Skip the points where boundary conditions occur
-                if i > left_neck_index and (j < neck_lower_index or j > neck_upper_index):
-                    continue
-                
-                # Apply solution for FDM (1D in time, 2D in space)
-                T[i,j,t] = (1 - 4*r)*(T[i,j,t-1]) + r*(T[i-1,j,t-1] + T[i+1, j, t-1] + T[i, j-1, t-1] + T[i, j+1, t-1])
-                
-        # Check if midbody temperature is below 16 degrees Celsius
-        if (np.amax(T[:, :, t]) < 16) and not Found:
-            t_crit = t * k # Actual time value
-            Found = True
     
-    print("At ", str(t_crit), " seconds, the wine is in the acceptable range")
+    # Solve for t > 0 using the Finite Difference Method (FDM)
+    T = FDM(T, intervals, indices, const)
 
     # GRAPHING
     ## Set up arrays for graphing
@@ -97,22 +95,8 @@ if converging:
     plt.savefig("Scatter graph")
     plt.show()
     
-    ## Plot 3d surface plot at t = 0s
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-    ax.set_box_aspect((2,8,3)) # Change aspect ratio to match bottle dimensions
-    im = ax.plot_surface(X, Y, T[:,:,0], rstride=1, cstride=1, 
-                         antialiased=False, cmap='plasma')
-    cbar = fig.colorbar(im)
-    im.set_clim(15, 25) # if not in range, will show as white
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,0]),np.amax(T[:,:,0]+1)))
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)", labelpad=20)
-    ax.set_zlabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    ax.set_zticks(np.arange(15,26,2))
-    plt.savefig("3d plot t0.png")
-    plt.show()
+    
+    SurfacePlot_3D(0, X, Y, T)
 
     ## Contour plot at t = 0s
     fig = plt.figure()
