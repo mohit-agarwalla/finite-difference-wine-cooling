@@ -9,6 +9,10 @@ The heat diffusion equation, henceforth HDE was solved using a finite difference
 ## Next steps
 This repository is being updated and so there are items that are still to be done. The next commit looks to have the following changes:
 - Refactor code to match pythonic standards and keep the scripts functional
+- Make the bottle a more normal shape as compared to the amalgamation of two rectangles
+- Accomodate for multiple types of bottle shapes as shown in the image below
 - Model the bottle as its own shape instead of being enclosed inside a rectangle
+
+![Wine bottle shapes](img\wine-bottle-shapes.png "Wine Bottle Shapes")
 
 AUTHOR CREDITS: ANYA PARMAR & MOHIT AGARWALLA
