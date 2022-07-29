@@ -13,6 +13,6 @@ This repository is being updated and so there are items that are still to be don
 - Accomodate for multiple types of bottle shapes as shown in the image below
 - Model the bottle as its own shape instead of being enclosed inside a rectangle
 
-![Wine bottle shapes](img\wine-bottle-shapes.png "Wine Bottle Shapes")
+![Wine bottle shapes](img/wine-bottle-shapes.png "Wine Bottle Shapes")
 
 AUTHOR CREDITS: ANYA PARMAR & MOHIT AGARWALLA
