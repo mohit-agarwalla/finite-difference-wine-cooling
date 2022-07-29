@@ -8,6 +8,7 @@ The heat diffusion equation, henceforth HDE was solved using a finite difference
 
 ## Next steps
 This repository is being updated and so there are items that are still to be done. The next commit looks to have the following changes:
+- Refactor code to match pythonic standards and keep the scripts functional
 - Model the bottle as its own shape instead of being enclosed inside a rectangle
 
 AUTHOR CREDITS: ANYA PARMAR & MOHIT AGARWALLA

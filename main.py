@@ -1,7 +1,7 @@
 # Import libraries
 import matplotlib.pyplot as plt
 import numpy as np
-from graphing import SurfacePlot_3D
+from graphing import SurfacePlot_3D, ContourPlot, TempDistnAtPoint
 from solver import FDM
 
 # Solving a PDE of wine bottle inside a cooler
@@ -20,7 +20,7 @@ alpha = 0.1
 k = 1 # time step
 h = 1 # x and y step
 r = alpha*k/h**2 
-const = [r, k]
+const = [r, k] 
 
 # Check if convergence will occur
 def Convergence(r):
@@ -87,130 +87,26 @@ if converging:
     t = np.arange(0,t_final+k,k)
     
     ## Plot Temperature at midpoint of main body against time
-    fig = plt.figure()
-    plt.plot(t,T[int((body_length/(2*h))), int(out_diam/(2*h)),:])
-    plt.xlabel("Time, t")
-    plt.ylabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    plt.yticks(np.arange(15,26))
-    plt.savefig("Scatter graph")
-    plt.show()
+    point = [int((body_length/(2*h))), int(out_diam/(2*h))]
+    TempDistnAtPoint(t, point, T, "midpoint")
     
+    # Graphs for t=0s
+    SurfacePlot_3D(0, k, X, Y, T)
+    ContourPlot(0, k, X, Y, T) 
     
-    SurfacePlot_3D(0, X, Y, T)
-
-    ## Contour plot at t = 0s
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    im = ax.contourf(X,Y,T[:,:,0],cmap='plasma', levels= np.arange(15,25.1,0.1)) # vmax=25
-    cbar = fig.colorbar(im)
-    im.set_clim(15, 25) # if not in range, will show as white
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,0]),np.amax(T[:,:,0])+1))
-    ax.set_aspect('equal')
-    plt.xticks(np.arange(0,100,25)) # Added for clarity when viewing plot
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)")
-    plt.savefig("Contour plot t0")
-    plt.show()
-
-    ## 3D plot at t = 10s
-    index_10s  = int(10/k) # index at which t=10 occurs
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-    ax.set_box_aspect((2,8,3)) # Change aspect ratio to match bottle dimensions
-    im = ax.plot_surface(X, Y, T[:,:,index_10s], rstride=1, cstride=1, 
-                         antialiased=False, cmap='plasma')
-    cbar = fig.colorbar(im)
-    im.set_clim(15, np.amax(T[:,:,index_10s])) 
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,index_10s]),np.amax(T[:,:,index_10s]+1)))
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)", labelpad=20)
-    ax.set_zlabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    ax.set_zticks(np.arange(np.amin(T[:,:,index_10s]), np.amax(T[:,:,index_10s])+1, 2))
-    plt.savefig("3d plot t10.png")
-    plt.show()
-
-    ## Contour plot at t = 10s
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    im = ax.contourf(X,Y,T[:,:,index_10s],cmap='plasma', levels= np.arange(15,25.1,0.1))
-    cbar = fig.colorbar(im)
-    im.set_clim(15, 25) # if not in range, will show as white
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,index_10s]),np.amax(T[:,:,index_10s]+1)))
-    ax.set_aspect('equal')
-    plt.xticks(np.arange(0,100,25)) # Added for clarity when viewing plot
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)")
-    plt.savefig("Contour plot t10")
-    plt.show()
+    # Graphs for t=10s
+    SurfacePlot_3D(10, k, X, Y, T)
+    ContourPlot(10, k, X, Y, T) 
     
-    ## 3D plot at t = 100s
-    index_100s  = int(100/k) # index at which t=10 occurs
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-    ax.set_box_aspect((2,8,3)) # Change aspect ratio to match bottle dimensions
-    im = ax.plot_surface(X, Y, T[:,:,index_100s], rstride=1, cstride=1, 
-                         antialiased=False, cmap='plasma')
-    cbar = fig.colorbar(im)
-    im.set_clim(15, np.amax(T[:,:,index_100s]))
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,index_100s]),np.amax(T[:,:,index_100s]+1)))
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)", labelpad=20)
-    ax.set_zlabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    ax.set_zticks(np.arange(np.amin(T[:,:,index_100s]), np.amax(T[:,:,index_100s])+1, 2))
-    plt.savefig("3d plot t100.png")
-    plt.show()
-
-    ## Contour plot at t = 100s
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    im = ax.contourf(X,Y,T[:,:,index_100s],cmap='plasma', levels= np.arange(15,25.1,0.1))
-    cbar = fig.colorbar(im)
-    im.set_clim(15, np.amax(T[:,:,index_100s]))
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,index_100s]),np.amax(T[:,:,index_100s]+1)))
-    ax.set_aspect('equal')
-    plt.xticks(np.arange(0,100,25)) # Added for clarity when viewing plot
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)")
-    plt.savefig("Contour plot t100")
-    plt.show()
-
-    ## Plot 3d plot at t = 3600s
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection = '3d')
-    ax.set_box_aspect((2,8,4)) # Change aspect ratio to match bottle dimensions
-    im = ax.plot_surface(X, Y, T[:,:,-1],rstride=1,cstride=1,cmap='plasma', antialiased=False)
-    im.set_clim(15,16)
-    cbar = fig.colorbar(im)
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(15,16.2,0.2))
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)", labelpad=20)
-    ax.set_zlabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    ax.set_zticks(np.arange(15,16.1,0.2))
-    plt.savefig("Surface plot t3600")
-    plt.show()
+    # Graphs for t=100s
+    SurfacePlot_3D(100, k, X, Y, T)
+    ContourPlot(100, k, X, Y, T) 
     
-    ## Contour plot at t = 3600s
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    im = ax.contourf(X,Y,T[:,:,-1],cmap='plasma', levels= np.arange(15,16.1,0.1))
-    cbar = fig.colorbar(im)
-    im.set_clim(15, np.amax(T[:,:,-1]))
-    cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
-    cbar.set_ticks(np.arange(np.amin(T[:,:,-1]),np.amax(T[:,:,-1]+1)))
-    ax.set_aspect('equal')
-    plt.xticks(np.arange(0,100,25)) # Added for clarity when viewing plot
-    plt.xlabel("X distance along bottle (mm)")
-    plt.ylabel("Y distance along bottle (mm)")
-    plt.savefig("Contour plot t100")
-    plt.show()   
+    # Graphs for t=3600s
+    SurfacePlot_3D(3600, k, X, Y, T)
+    ContourPlot(3600, k, X, Y, T)   
 
 else:
     print("Convergence will not occur so aborted program.")
 
-print('CW done: I deserve a good mark')
+# print('CW done: I deserve a good mark')
