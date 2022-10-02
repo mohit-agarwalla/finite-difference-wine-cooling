@@ -90,11 +90,10 @@ def Bordeaux(const, t_final, T_BC):
     T_initial = T_BC[0]
     T_cooler = T_BC[1]
     
-    T[:,:,0] = T_initial # ICs
+    T[:,:,0] = T_cooler # ICs
     
     right_neck_y = ((length/2)+(neck_diam/2))
     left_neck_y = ((length/2)-(neck_diam/2))
-    print(left_neck_y, right_neck_y)
     for i in range(x_intervals+1):
         for j in range(y_intervals+1):
             x = i * h
@@ -108,10 +107,11 @@ def Bordeaux(const, t_final, T_BC):
                 T[i,j,:] = T_initial
                 
             # Curved necks (modelled as a quarter circle)
-            elif x < (straight_height + curved_horizontal_radius):
-                if y >= left_neck_y:
-                    if curved_horizontal_radius**2 > ((x-straight_height)**2 + (y-left_neck_y)**2):
-                        T[i,j,:] = T_initial
+            elif x < (main_length + curved_horizontal_radius):
+                if curved_horizontal_radius**2 > ((x-main_length)**2 + (y-left_neck_y)**2):
+                    T[i,j,:] = T_initial
+                if curved_horizontal_radius**2 > ((x-main_length)**2 + (y-right_neck_y)**2):
+                    T[i,j,:] = T_initial
             else:
                 # print(x,y)
                 T[i,j,:] = T_cooler
@@ -125,6 +125,8 @@ def Bordeaux(const, t_final, T_BC):
     
     return T, intervals, final
 
+
+# Not currently implemented, requires changes to the height
 def BordeauxHighShoulder(const, t_final, T_BC):
     h = const[2]
     k = const[1]
@@ -137,7 +139,6 @@ def BordeauxHighShoulder(const, t_final, T_BC):
     neck_diam = 27.5
     length = 75
     straight_height = 185
-    curved_height = 45
     curved_horizontal_radius = 0.5 * (length - neck_diam)
     
     x_intervals = int((height)/h)
@@ -149,7 +150,7 @@ def BordeauxHighShoulder(const, t_final, T_BC):
     T_initial = T_BC[0]
     T_cooler = T_BC[1]
     
-    T[:,:,0] = T_initial # ICs
+    T[:,:,0] = T_cooler # ICs
     
     right_neck_y = ((length/2)+(neck_diam/2))
     left_neck_y = ((length/2)-(neck_diam/2))
@@ -165,14 +166,14 @@ def BordeauxHighShoulder(const, t_final, T_BC):
             elif (y < right_neck_y) and (y > left_neck_y):
                 T[i,j,:] = T_initial
                 
-            # Curved necks (modelled as an oval)
-            elif x < (straight_height + curved_height):
-                if 1 > (((x - main_length)**2)/curved_height**2) + (((y - left_neck_y)**2)/curved_horizontal_radius**2): # one of them
+            # Curved necks (modelled as a quarter circle)
+            elif x < (main_length + curved_horizontal_radius):
+                if curved_horizontal_radius**2 > ((x-main_length)**2 + (y-left_neck_y)**2):
                     T[i,j,:] = T_initial
-                    # print((((x - main_length)**2)/curved_height**2) + (((y - left_neck_y)**2)/curved_horizontal_radius**2))
-                else:
-                    print(x)
+                if curved_horizontal_radius**2 > ((x-main_length)**2 + (y-right_neck_y)**2):
+                    T[i,j,:] = T_initial
             else:
+                # print(x,y)
                 T[i,j,:] = T_cooler
     
     T[0,:,:] = T_cooler #(x = 0)
@@ -183,97 +184,3 @@ def BordeauxHighShoulder(const, t_final, T_BC):
     final = [height, length]
     
     return T, intervals, final
-
-# # Not currently implemented
-# def Bordeaux(const, t_final, T_BC):
-#     """
-#     This script will produce a Bordeaux bottle.
-#     """
-#     # Constants
-#     height = 320
-#     neck_diam = 27.5
-#     width = 75
-#     punt_h = 19
-#     punt_w = 65
-#     straight_h = 185
-#     curved_h = 45
-#     final = [width, height]
-#     h = const[2]
-#     k = const[1]
-#     x_intervals = int((length)/h)
-#     y_intervals = int((width)/h)
-#     t_intervals = int((t_final)/k)
-#     intervals = [x_intervals, y_intervals, t_intervals]
-#     print(intervals)
-    
-#     # Discretise Domain
-#     T = np.zeros((x_intervals + 1, y_intervals + 1, t_intervals + 1))
-    
-#     T_initial = T_BC[0]
-#     T_cooler = T_BC[1]
-    
-    
-#     # Set BCs and ICs
-#     T[:,:,0] = T_initial # ICs
-#     pos = np.zeros((x_intervals + 1, y_intervals + 1)) # Array to tell whether bottle exists or not
-#     for i in range(x_intervals+1):
-#         for j in range(y_intervals+1):
-#             x = i * h
-#             y = j * h
-#             left_neck_x = (width - neck_diam)/2
-#             # Check if in the top straight region
-#             if (x > (straight_h + curved_h)):
-#                 print("In straight top region")
-#                 if (y > ((width/2) - (neck_diam/2))) and (y < ((width/2) + (neck_diam/2))):
-#                     pos[i][j] = True
-                
-#                 else:
-#                     pos[i][j] = False
-                                       
-            
-#             # Deal with curved region, modelled as 
-            
-#             elif (x > straight_h) and (x < (straight_h + curved_h)):
-#                 if y < ((width/2) - (neck_diam/2)):
-#                     if ((((x - straight_h)**2)/curved_h) + (((y - left_neck_x)**2)/left_neck_x)) < 1:
-#                         pos[i][j] = True
-#                 elif y > ((width/2) + (neck_diam/2)):
-#                     continue
-#                 else:
-#                     pos[i][j] = True
-                    
-            
-#             # main body is true
-#             elif x > punt_h and y < straight_h:
-#                 pos[i][j] = True
-                
-                            
-#             # If in punt area false
-#             elif ((((y-(width/2))**2)/(punt_w/2)**2) + (((y-(width/2))**2)/(punt_w/2)**2)) < 1:
-#                 pos[i][j] = False
-                
-            
-#             elif (y > ((width/2) + (punt_w/2))) or (y < ((width/2) - (punt_w/2))):
-#                 if x < straight_h:
-#                     pos[i][j] = True
-                    
-                
-#             else:
-#                 pos[i][j] = False
-    
-#     T[0,:,:] = T_cooler #(x = 0)
-#     T[-1,:,:] = T_cooler #(x = length)
-#     T[:, 0, :] = T_cooler #(y=out_diam)
-#     T[:, -1, :] = T_cooler #(y=0)       
-    
-    
-    
-#     for i in range(x_intervals + 1):
-#         for j in range(y_intervals + 1):
-#             if pos[i][j] == False:
-#                 T[i,j,:] = T_cooler
-#             else:
-#                 T[i,j,:] = T_initial    
-    
-    
-#     return T, intervals, final
