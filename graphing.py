@@ -6,16 +6,16 @@ def SurfacePlot_3D(t, k, X, Y, T):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection = '3d')
     ax.set_box_aspect((2,8,3)) # Change aspect ratio to match bottle dimensions
-    im = ax.plot_surface(X, Y, T[:,:,0], rstride=1, cstride=1, 
+    im = ax.plot_surface(X, Y, T[:,:,int(t/k)], rstride=1, cstride=1, 
                          antialiased=False, cmap='plasma')
     cbar = fig.colorbar(im)
-    im.set_clim(15, 25) # if not in range, will show as white
+    # im.set_clim(15, 25) # if not in range, will show as white
     cbar.set_label("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)", labelpad=10)
     cbar.set_ticks(np.arange(np.amin(T[:,:,t]),np.amax(T[:,:,t]+1)))
     plt.xlabel("X distance along bottle (mm)")
     plt.ylabel("Y distance along bottle (mm)", labelpad=20)
     ax.set_zlabel("Temperature of wine (" + u"\N{DEGREE SIGN}" + "C)")
-    ax.set_zticks(np.arange(15,26,2))
+    # ax.set_zticks(np.arange(15,26,2))
     plt.title("3D Surface plot at time t = " + str(t))
     plt.savefig(f"graphs\Surface Plot at t = {str(t)}s.png")
     plt.show()

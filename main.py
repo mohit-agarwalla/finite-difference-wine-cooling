@@ -18,8 +18,8 @@ from shape import WineBottle
 # PDE constants
 alpha = 0.392 # thermal diffusivity of wine (mm2/s)
 # alpha = 0.1
-k = 1 # time step
-h = 4 # x and y step
+k = 0.2 # time step
+h = 1 # x and y step
 r = alpha*k/h**2 
 const = [r, k, h] 
 t_final = 3600
