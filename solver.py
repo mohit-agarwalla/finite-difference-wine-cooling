@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Solve for t > 0 using the Finite Difference Method (FDM)
-def FDM(T, intervals, const):
+def FDM(T, intervals, const, T_BC):
     Found = False
     # Extract info from inputs
     x_intervals = intervals[0]
     y_intervals = intervals[1]
     t_intervals = intervals[2]
     
+    T_cooler = T_BC[1]
     
     r = const[0]
     k = const[1]
@@ -18,7 +19,7 @@ def FDM(T, intervals, const):
         for i in range(1,x_intervals):
             for j in range(1,y_intervals):
                 # Skip the points where boundary conditions occur
-                if T[i,j,t] == False:
+                if T[i,j,t] == T_cooler:
                     continue
                 
                 # Apply solution for FDM (1D in time, 2D in space)

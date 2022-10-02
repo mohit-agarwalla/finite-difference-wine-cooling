@@ -18,8 +18,8 @@ from shape import WineBottle
 # PDE constants
 alpha = 0.392 # thermal diffusivity of wine (mm2/s)
 # alpha = 0.1
-k = 0.2 # time step
-h = 1 # x and y step
+k = 1 # time step
+h = 4 # x and y step
 r = alpha*k/h**2 
 const = [r, k, h] 
 t_final = 3600
@@ -33,18 +33,18 @@ converging = Convergence(r)
 # Only implement the model if convergence occurs
 if converging:
     T_BC = [25, 15]
-    T, pos, intervals, final = WineBottle("B", const, t_final=3600, T_BC=T_BC)
+    T, intervals, final = WineBottle("B", const, t_final=t_final, T_BC=T_BC)
 
     # Solve for t > 0 using the Finite Difference Method (FDM)
-    T, Found = FDM(T, intervals, const)
+    T, Found = FDM(T, intervals, const, T_BC)
 
 
     x_final = final[0]
     y_final = final[1]
     # GRAPHING
-    ## Set up arrays for graphing
-    X = np.linspace(0, x_final + h, len(T[:,:,0]))
-    Y = np.linspace(0, y_final + h, len(T[:,:,0][0]))
+    ## Set up arrays for` graphing
+    X = np.linspace(0, x_final+h, len(T[:,:,0]))
+    Y = np.linspace(0, y_final+h, len(T[:,:,0][0]))
     X, Y = np.meshgrid(Y, X) 
     t = np.arange(0,t_final+k,k)
     
@@ -70,5 +70,3 @@ if converging:
 
 else:
     print("Convergence will not occur so aborted program.")
-
-# print('CW done: I deserve a good mark')

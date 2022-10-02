@@ -12,6 +12,7 @@ This repository is being updated and so there are items that are still to be don
 - Make the bottle a more normal shape as compared to the amalgamation of two rectangles
 - Accomodate for multiple types of bottle shapes as shown in the image below, starting with the Bordeaux
 - Model the bottle as its own shape instead of being enclosed inside a rectangle
+- Add functionality to have optional inputs for constants
 
 ![Wine bottle shapes](img/wine-bottle-shapes.png "Wine Bottle Shapes")
 
